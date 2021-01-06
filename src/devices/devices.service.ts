@@ -15,7 +15,7 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
   async delete(id: string): Promise<DeviceModel> {
     await this.gatewayService.gatewayModel.updateMany(
       {},
-      { $pull: { devices: id} },
+      { $pull: { devices: id } },
     );
     return await super.delete(id);
   }
