@@ -1,5 +1,5 @@
 import { prop, Ref } from '@typegoose/typegoose';
-import { DeviceModel } from './device.model';
+import { DeviceModel } from '../../devices/models/device.model';
 
 export class GatewayModel {
   @prop({ default: () => new Date(new Date().toUTCString()) })

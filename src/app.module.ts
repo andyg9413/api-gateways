@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypegooseModule } from 'nestjs-typegoose';
 import * as dotenv from 'dotenv';
-import { DeviceModel } from './models/device.model';
-import { GatewayModel } from './models/gateway.model';
+import { DevicesModule } from './devices/devices.module';
+import { GatewaysModule } from './gateways/gateways.module';
 dotenv.config();
 @Module({
   imports: [
@@ -19,7 +19,8 @@ dotenv.config();
       }),
       inject: [ConfigService],
     }),
-    TypegooseModule.forFeature([DeviceModel, GatewayModel]),
+    DevicesModule,
+    GatewaysModule,
   ],
   controllers: [],
   providers: [],
