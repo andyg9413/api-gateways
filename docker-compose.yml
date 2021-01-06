@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_db_dev
+    volumes:
+      - ./storage:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      mongo:
+        aliases:
+          - mongo.local
+      
+networks:
+  mongo:
+    external: true
