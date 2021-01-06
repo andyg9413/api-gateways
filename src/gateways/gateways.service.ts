@@ -70,19 +70,34 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
     const aggregate = [
       { $unwind: { path: '$devices', preserveNullAndEmptyArrays: true } },
       {
+        $addFields: {
+          deviceId: { $toObjectId: '$devices' },
+        },
+      },
+      {
         $lookup: {
           from: 'devicemodels',
-          localField: 'devices',
-          foreignField: '_id',
+          let: {
+            device: '$deviceId',
+          },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$device'] } } }],
           as: 'device',
         },
       },
       { $unwind: { path: '$device', preserveNullAndEmptyArrays: true } },
       {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          ip: { $first: '$ip' },
+          devices: { $push: '$device' },
+        },
+      },
+      {
         $project: {
           name: 1,
           ip: 1,
-          device: 1,
+          devices: 1,
         },
       },
     ];
@@ -99,5 +114,46 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
       count,
       total,
     };
+  }
+
+  async getOneGateway(id: string): Promise<any> {
+    const aggregate = [
+      { $match: { _id: Types.ObjectId(id) } },
+      { $unwind: { path: '$devices', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          deviceId: { $toObjectId: '$devices' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'devicemodels',
+          let: {
+            device: '$deviceId',
+          },
+          pipeline: [{ $match: { $expr: { $eq: ['$_id', '$$device'] } } }],
+          as: 'device',
+        },
+      },
+      { $unwind: { path: '$device', preserveNullAndEmptyArrays: true } },
+      {
+        $group: {
+          _id: '$_id',
+          name: { $first: '$name' },
+          ip: { $first: '$ip' },
+          devices: { $push: '$device' },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          ip: 1,
+          devices: 1,
+        },
+      },
+    ];
+
+    const data = await this.gatewayModel.aggregate(aggregate).exec();
+    return data ? data[0] : null;
   }
 }

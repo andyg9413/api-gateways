@@ -42,4 +42,9 @@ export class GatewaysController extends CrudController(GatewaysService, {
   async getAll(@Query() query: GetAllQueryDto): Promise<GetAllResponseDto> {
     return this.gatewaysService.getAllGateways(query);
   }
+
+  @Get(':id')
+  async getOneGateway(@Param('id') id: string): Promise<GatewayModel> {
+    return this.gatewaysService.getOneGateway(id);
+  }
 }
