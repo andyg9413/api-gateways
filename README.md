@@ -37,7 +37,7 @@ $ touch .env
 ```
 These are the environment variables you will need
 ```bash
-MONGO_URI
+MONGO_URI=mongodb://localhost:27017/gateways-db
 ```
 Once you set the environment variables run the docker-compose file in the console in order the run MongoDB
 ```bash
