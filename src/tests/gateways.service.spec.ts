@@ -79,7 +79,7 @@ describe('GatewaysService', () => {
     expect(output).toHaveProperty('updatedAt');
   });
 
-  it('should get one gateway by id', async () => {
+  it('should delete one gateway by id', async () => {
     const gateway = await service.getOne({ name: 'ChangedTestGateway' });
     const output = await service.delete(gateway.id);
 
