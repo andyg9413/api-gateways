@@ -26,7 +26,7 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
     super();
   }
   async update(id: string, dto: UpdateGatewayDto): Promise<GatewayModel> {
-    const { devices, name, ip } = dto;
+    const { name, ip } = dto;
 
     if (!Types.ObjectId.isValid(id))
       throw new BadRequestException('Invalid gateway id');
@@ -38,30 +38,7 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
     if (name) gateway.name = name;
     if (ip) gateway.ip = ip;
 
-    const devicesArray = gateway.devices;
-
-    if (devices && devices.length > 0) {
-      for (const device of devices) {
-        if (!Types.ObjectId.isValid(device)) {
-          throw new BadRequestException('Some invalid id');
-        }
-        const found = await this.devicesService.get(device);
-        if (!found) {
-          throw new NotFoundException('Some device not exists');
-        }
-        const index = gateway.devices?.findIndex(
-          (d) => d.toString() === device.toString(),
-        );
-        if (index === -1) {
-          devicesArray.push(device);
-        } else {
-          devicesArray.splice(index, 1);
-        }
-      }
-    }
-    if (devicesArray.length > 10)
-      throw new BadRequestException('Max size of devices must be 10');
-    return await super.update(id, { ...gateway, devices: devicesArray });
+    return await super.update(id, gateway);
   }
 
   async getAllGateways(query: GetAllQueryDto): Promise<GetAllResponseDto> {
@@ -155,5 +132,19 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
 
     const data = await this.gatewayModel.aggregate(aggregate).exec();
     return data ? data[0] : null;
+  }
+
+  async delete(id: string): Promise<GatewayModel> {
+    if (!Types.ObjectId.isValid(id))
+      throw new BadRequestException('Invalid gateway id');
+
+    const gateway: GatewayModel = await super.get(id);
+
+    if (!gateway) throw new NotFoundException('Gateway not found');
+    
+    this.devicesService.deleteMany(gateway.devices);
+    await super.delete(id);
+
+    return gateway;
   }
 }

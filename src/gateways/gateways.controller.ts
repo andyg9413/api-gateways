@@ -47,4 +47,9 @@ export class GatewaysController extends CrudController(GatewaysService, {
   async getOneGateway(@Param('id') id: string): Promise<GatewayModel> {
     return this.gatewaysService.getOneGateway(id);
   }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string): Promise<GatewayModel> {
+    return this.gatewaysService.delete(id);
+  }
 }

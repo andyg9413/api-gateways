@@ -1,5 +1,4 @@
-import { prop, Ref } from '@typegoose/typegoose';
-import { DeviceModel } from '../../devices/models/device.model';
+import { prop } from '@typegoose/typegoose';
 
 export class GatewayModel {
   @prop({ default: () => new Date(new Date().toUTCString()) })
@@ -17,5 +16,5 @@ export class GatewayModel {
   ip: string;
 
   @prop()
-  devices: Array<Ref<DeviceModel>>;
+  devices: any[];
 }
