@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Param, Post, Put, Delete } from '@nestjs/common';
 import { DevicesService } from './devices.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { UpdateDeviceDto } from './dto/update-device.dto';
@@ -19,7 +19,7 @@ export class DevicesController extends CrudController(DevicesService, {
 
   @Post()
   async create(@Body() dto: CreateDeviceDto): Promise<DeviceModel> {
-    return super.create(dto);
+    return await this.devicesService.create(dto);
   }
 
   @Put(':id')
@@ -27,6 +27,13 @@ export class DevicesController extends CrudController(DevicesService, {
     @Param('id') id: string,
     @Body() dto: UpdateDeviceDto,
   ): Promise<DeviceModel> {
-    return super.update(id, dto);
+    return await this.devicesService.update(id, dto);
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id') id: string,
+  ): Promise<DeviceModel> {
+    return await this.devicesService.delete(id);
   }
 }
