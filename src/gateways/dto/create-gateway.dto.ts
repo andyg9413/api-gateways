@@ -17,8 +17,4 @@ export class CreateGatewayDto {
   @IsIP(4)
   @IsNotEmpty()
   ip: string;
-
-  @IsOptional()
-  @ArrayMaxSize(10)
-  devices?: any[];
 }
