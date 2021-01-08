@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { MongoCrudService } from '../mongo-rest/src/mongo-crud.service';
 import { DeviceModel } from './models/device.model';
 import { GatewaysService } from '../gateways/gateways.service';
@@ -17,23 +23,23 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
   }
 
   async delete(id: string): Promise<DeviceModel> {
-    const device: DeviceModel = super.get(id);
+    const device: DeviceModel = await super.get(id);
 
-    if(!device){
+    if (!device) {
       throw new NotFoundException('Device not found');
     }
 
-    const oldGateway: GatewayModel = await this.gatewayService.getOne({devices: {$in: [device.id]}});
-    console.log(oldGateway);
-    const devices = oldGateway.devices.filter(element => {
-      if(element !== Types.ObjectId(id)) 
-        return element;
+    const oldGateway: GatewayModel = await this.gatewayService.getOne({
+      devices: { $in: [Types.ObjectId(id)] },
+    });
+    const devices = oldGateway.devices.filter((element) => {
+      if (element.toString() !== id.toString()) return element;
     });
     const updatedOldGateway = {
       ...oldGateway,
       devices,
     };
-      
+
     await this.gatewayService.update(oldGateway.id, updatedOldGateway);
 
     return await super.delete(id);
@@ -44,21 +50,25 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
   }
 
   async create(dto: CreateDeviceDto): Promise<DeviceModel> {
-    if(!dto.gatewayId){
+    if (!dto.gatewayId) {
       throw new BadRequestException('gatewayId should be defined');
     }
 
-    if(!Types.ObjectId.isValid(dto.gatewayId)){
+    if (!Types.ObjectId.isValid(dto.gatewayId)) {
       throw new BadRequestException('gatewayId should be an ObjectId');
     }
 
     const gateways: GatewayModel = await this.gatewayService.get(dto.gatewayId);
-    if(!gateways){
-      throw new NotFoundException('Does not exist any gateway with the id provided');
+    if (!gateways) {
+      throw new NotFoundException(
+        'Does not exist any gateway with the id provided',
+      );
     }
 
-    if(gateways.devices.length > 9){
-      throw new BadRequestException('The number of services associated with a gateway cannot exceed 10.');
+    if (gateways.devices.length > 9) {
+      throw new BadRequestException(
+        'The number of services associated with a gateway cannot exceed 10.',
+      );
     }
 
     const device: DeviceModel = await super.create(dto);
@@ -71,34 +81,35 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
   async update(id: string, dto: UpdateDeviceDto): Promise<DeviceModel> {
     const lastDevice = await super.get(id);
 
-    if(!lastDevice){
+    if (!lastDevice) {
       throw new NotFoundException('Device not found');
     }
 
-    if(dto.gatewayId){
-  
-      if(!Types.ObjectId.isValid(dto.gatewayId)){
+    if (dto.gatewayId) {
+      if (!Types.ObjectId.isValid(dto.gatewayId)) {
         throw new BadRequestException('gatewayId should be an ObjectId');
       }
-  
-      const newGateway: GatewayModel = await this.gatewayService.get(dto.gatewayId);
-      if(!newGateway){
-        throw new NotFoundException('Does not exist any gateway with the id provided');
+
+      const newGateway: GatewayModel = await this.gatewayService.get(
+        dto.gatewayId,
+      );
+      if (!newGateway) {
+        throw new NotFoundException(
+          'Does not exist any gateway with the id provided',
+        );
       }
 
-      if(newGateway.devices.length > 9){
-        throw new BadRequestException('The number of services associated with a gateway cannot exceed 10.');
+      if (newGateway.devices.length > 9) {
+        throw new BadRequestException(
+          'The number of services associated with a gateway cannot exceed 10.',
+        );
       }
 
-      console.log(id);
-      
-      const oldGateway: GatewayModel = await this.gatewayService.getOne({devices: {$in: [lastDevice.id]}});
-      console.log(oldGateway);
-      
-      const devices = oldGateway.devices.filter(element => {
-        if(element !== Types.ObjectId(id)) 
-          return element;
+      const oldGateway: GatewayModel = await this.gatewayService.getOne({
+        devices: { $in: [Types.ObjectId(lastDevice.id)] },
       });
+
+      const devices = oldGateway.devices.filter(element => element.toString() !== id);
       const updatedOldGateway = {
         ...oldGateway,
         devices,

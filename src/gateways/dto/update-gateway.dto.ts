@@ -15,4 +15,7 @@ export class UpdateGatewayDto {
   @IsIP(4)
   @IsOptional()
   ip?: string;
+
+  @IsOptional()
+  devices?: any[];
 }

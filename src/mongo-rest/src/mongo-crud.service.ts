@@ -58,8 +58,10 @@ export function MongoCrudService<T>(
     }
 
     async deleteMany(ids: Array<any>): Promise<any> {
-      const objectIds = ids.map(id => {return Types.ObjectId(id)});
-      return await this.model.deleteMany({_id: { $in: objectIds}}).exec();
+      const objectIds = ids.map((id) => {
+        return Types.ObjectId(id);
+      });
+      return await this.model.deleteMany({ _id: { $in: objectIds } }).exec();
     }
   }
 

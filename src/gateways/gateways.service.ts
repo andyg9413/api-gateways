@@ -26,7 +26,7 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
     super();
   }
   async update(id: string, dto: UpdateGatewayDto): Promise<GatewayModel> {
-    const { name, ip } = dto;
+    const { name, ip, devices } = dto;
 
     if (!Types.ObjectId.isValid(id))
       throw new BadRequestException('Invalid gateway id');
@@ -37,7 +37,7 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
 
     if (name) gateway.name = name;
     if (ip) gateway.ip = ip;
-
+    if (devices) gateway.devices = devices;
     return await super.update(id, gateway);
   }
 
@@ -141,7 +141,7 @@ export class GatewaysService extends MongoCrudService(GatewayModel) {
     const gateway: GatewayModel = await super.get(id);
 
     if (!gateway) throw new NotFoundException('Gateway not found');
-    
+
     this.devicesService.deleteMany(gateway.devices);
     await super.delete(id);
 

@@ -31,9 +31,7 @@ export class DevicesController extends CrudController(DevicesService, {
   }
 
   @Delete(':id')
-  async delete(
-    @Param('id') id: string,
-  ): Promise<DeviceModel> {
+  async delete(@Param('id') id: string): Promise<DeviceModel> {
     return await this.devicesService.delete(id);
   }
 }
