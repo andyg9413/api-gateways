@@ -9,4 +9,5 @@ export interface ICrudService {
   create(dto: any): any;
   update(id: any, dto: any): any;
   delete(id: any): any;
+  deleteMany(id: any): any;
 }

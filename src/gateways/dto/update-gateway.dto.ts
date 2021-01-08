@@ -16,7 +16,6 @@ export class UpdateGatewayDto {
   @IsOptional()
   ip?: string;
 
-  @ArrayMaxSize(10)
   @IsOptional()
   devices?: any[];
 }
