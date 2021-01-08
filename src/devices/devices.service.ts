@@ -23,7 +23,8 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
       throw new NotFoundException('Device not found');
     }
 
-    const oldGateway: GatewayModel = this.gatewayService.getOne({devices: {$in: [device.id]}});
+    const oldGateway: GatewayModel = await this.gatewayService.getOne({devices: {$in: [device.id]}});
+    console.log(oldGateway);
     const devices = oldGateway.devices.filter(element => {
       if(element !== Types.ObjectId(id)) 
         return element;
@@ -89,7 +90,11 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
         throw new BadRequestException('The number of services associated with a gateway cannot exceed 10.');
       }
 
-      const oldGateway: GatewayModel = await this.gatewayService.getOne({devices: {$in: [id]}});
+      console.log(id);
+      
+      const oldGateway: GatewayModel = await this.gatewayService.getOne({devices: {$in: [lastDevice.id]}});
+      console.log(oldGateway);
+      
       const devices = oldGateway.devices.filter(element => {
         if(element !== Types.ObjectId(id)) 
           return element;
