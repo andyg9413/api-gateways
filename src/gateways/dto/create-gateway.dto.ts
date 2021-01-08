@@ -1,4 +1,5 @@
 import {
+  ArrayMaxSize,
   IsArray,
   IsIP,
   IsNotEmpty,
@@ -17,8 +18,7 @@ export class CreateGatewayDto {
   @IsNotEmpty()
   ip: string;
 
-  @IsArray({ each: true })
   @IsOptional()
-  @MaxLength(10)
+  @ArrayMaxSize(10)
   devices?: any[];
 }

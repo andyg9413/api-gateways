@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DevicesService } from './devices.service';
+import { DevicesService } from '../devices/devices.service';
 import { GatewaysService } from '../gateways/gateways.service';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { GatewayModel } from '../gateways/models/gateway.model';
-import { DeviceModel } from './models/device.model';
+import { DeviceModel } from '../devices/models/device.model';
 import { MongoMemoryServer } from 'mongodb-memory-server-core';
-import { CreateDeviceDto } from './dto/create-device.dto';
-import { StatusEnum } from './models/status.enum';
-import { UpdateDeviceDto } from './dto/update-device.dto';
+import { CreateDeviceDto } from '../devices/dto/create-device.dto';
+import { StatusEnum } from '../devices/models/status.enum';
+import { UpdateDeviceDto } from '../devices/dto/update-device.dto';
 
 describe('DeviceService', () => {
   let service: DevicesService;
@@ -60,32 +60,35 @@ describe('DeviceService', () => {
   it('should get one device by id', async () => {
     const device = await service.getOne({ vendor: 'Max Payne' });
     const output = await service.get(device.id);
-    expect(output).toHaveProperty('id');
+    expect(output).toHaveProperty('id', device.id);
     expect(output).toHaveProperty('vendor', 'Max Payne');
     expect(output).toHaveProperty('status', StatusEnum.OFFLINE);
     expect(output).toHaveProperty('createdAt');
   });
 
   it('should update a device', async () => {
+    const device = await service.getOne({ vendor: 'Max Payne' });
     const dto: UpdateDeviceDto = {
       status: StatusEnum.ONLINE,
       vendor: 'John Doe',
     };
-    const output = await service.create(dto);
-    expect(output).toHaveProperty('id');
+    const output = await service.update(device.id, dto);
+    expect(output).toHaveProperty('id', device.id);
     expect(output).toHaveProperty('vendor', 'John Doe');
     expect(output).toHaveProperty('status', StatusEnum.ONLINE);
     expect(output).toHaveProperty('createdAt');
+    expect(output).toHaveProperty('updatedAt');
   });
 
   it('should get one device by id', async () => {
     const device = await service.getOne({ vendor: 'John Doe' });
     const output = await service.delete(device.id);
 
-    expect(output).toHaveProperty('id');
+    expect(output).toHaveProperty('id', device.id);
     expect(output).toHaveProperty('vendor', 'John Doe');
     expect(output).toHaveProperty('status', StatusEnum.ONLINE);
     expect(output).toHaveProperty('createdAt');
+    expect(output).toHaveProperty('updatedAt');
   });
 
   afterEach(() => {
