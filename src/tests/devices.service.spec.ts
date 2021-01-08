@@ -12,6 +12,7 @@ import { UpdateDeviceDto } from '../devices/dto/update-device.dto';
 describe('DeviceService', () => {
   let service: DevicesService;
   let mongoServer;
+  let gatewayService: GatewaysService;
 
   beforeAll(async () => {
     mongoServer = new MongoMemoryServer();
@@ -27,12 +28,18 @@ describe('DeviceService', () => {
     }).compile();
 
     service = module.get<DevicesService>(DevicesService);
+    gatewayService = module.get<GatewaysService>(GatewaysService);
   });
 
   it('should create a device', async () => {
+    const gateway = await gatewayService.create({
+      name: 'Gateway 1',
+      ip: '0.0.0.0',
+    });
     const dto: CreateDeviceDto = {
       status: StatusEnum.OFFLINE,
       vendor: 'Max Payne',
+      gatewayId: gateway.id,
     };
     const output = await service.create(dto);
     expect(output).toHaveProperty('id');

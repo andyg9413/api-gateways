@@ -109,7 +109,9 @@ export class DevicesService extends MongoCrudService(DeviceModel) {
         devices: { $in: [Types.ObjectId(lastDevice.id)] },
       });
 
-      const devices = oldGateway.devices.filter(element => element.toString() !== id);
+      const devices = oldGateway.devices.filter(
+        (element) => element.toString() !== id,
+      );
       const updatedOldGateway = {
         ...oldGateway,
         devices,
