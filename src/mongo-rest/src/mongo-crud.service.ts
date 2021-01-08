@@ -56,6 +56,11 @@ export function MongoCrudService<T>(
     async delete(id: any): Promise<any> {
       return await this.model.findByIdAndDelete(id).exec();
     }
+
+    async deleteMany(ids: Array<any>): Promise<any> {
+      const objectIds = ids.map(id => {return Types.ObjectId(id)});
+      return await this.model.deleteMany({_id: { $in: objectIds}}).exec();
+    }
   }
 
   return MongoCrudServiceHost;
